@@ -1,5 +1,24 @@
 ---
 apiVersion: v1
+kind: ConfigMap
+metadata:
+    name: configuracion-fedora
+data:
+    usuario: ivan
+    emailserver.properties: |
+        smtp=smtp.ivan.com
+        usuario=ivan@ivan.com
+        password=ivancillo
+---
+apiVersion: v1
+kind: Secret
+metadata:
+    name: secretos-fedora
+#type: Opaque
+data:
+    password: ZXN0ZSBlcyBtaSBtYXlvciBzZWNyZXRv
+---
+apiVersion: v1
 kind: Pod
 metadata:
     name: nginx-fedora-p
@@ -7,6 +26,7 @@ metadata:
         app: nginx
 spec:
     containers:
+    
         - name: nginx-c
           image: nginx
           resources:
@@ -18,18 +38,37 @@ spec:
           volumeMounts:
             - name: compartido
               mountPath: /compartido
+          env:
+            - name: usuariodb
+              valueFrom:
+                configMapKeyRef:
+                    name: configuracion-fedora
+                    key: usuario
+            - name: passwordbd
+              valueFrom:
+                secretKeyRef:
+                    name: secretos-fedora
+                    key: password
+            - name: puerto
+              value: '17652' # No es recomendado
+
         - name: fedora
           image: fedora:latest
           command: ['sh','-c','sleep 3600;']
           volumeMounts:
             - name: compartido
               mountPath: /compartida
-            - name: compartido_memoria
+            - name: compartido-memoria
               mountPath: /compartida_memoria
             - name: docker
               mountPath: /var/lib/docker
+            - name: configuracion
+              mountPath: /configuracion            
+            - name: secretosdeestado
+              mountPath: /secretos
+              
     volumes:
-        - name: compartido_memoria
+        - name: compartido-memoria
           emptyDir: 
             medium: Memory
             sizeLimit: 1Mi
@@ -42,7 +81,12 @@ spec:
                     #DirectoryOrCreate # Es un directorio si no existe se debe crear
                     #File # Es un fichero que debe existir
                     #FileOrCreate # Es un fichero si no existe se debe crear
-
+        - name: configuracion
+          configMap:
+            name: configuracion-fedora
+        - name: secretosdeestado
+          secret:
+            secretName: secretos-fedora
 ---
 apiVersion: v1
 kind: Service
