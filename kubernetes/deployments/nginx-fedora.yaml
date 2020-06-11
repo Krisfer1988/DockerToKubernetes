@@ -10,6 +10,7 @@ data:
         usuario=ivan@ivan.com
         password=ivancillo
 ---
+# kubectl create secret generic secretos-fedora --from-literal=password=ivancillo
 apiVersion: v1
 kind: Secret
 metadata:
@@ -29,10 +30,6 @@ spec:
     
         - name: nginx-c
           image: nginx
-          resources:
-            limits:
-                cpu: 1
-                memory: 1Gi
           ports:
             - containerPort: 80
           volumeMounts:
@@ -71,7 +68,6 @@ spec:
         - name: compartido-memoria
           emptyDir: 
             medium: Memory
-            sizeLimit: 1Mi
         - name: compartido
           emptyDir: {}
         - name: docker

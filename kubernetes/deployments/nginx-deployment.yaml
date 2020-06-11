@@ -1,0 +1,66 @@
+# Desarrollador
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+    name: volumen-logs-nginx
+spec:
+    resources:
+        requests:
+            storage: 10Mi
+    accessModes:
+        - ReadWriteOnce
+    storageClassName: redundante # Es suministrado por el administrador
+---
+apiVersion: apps/v1
+kind: Deployment # StatefulSet
+metadata:
+    name: nginx-d
+spec:
+    replicas: 2 # Valor inicial
+    selector:
+        matchLabels:
+            app: nginxcluster
+    
+    template:
+        #Pod
+        metadata:
+            name: nginx-p
+            labels:
+                app: nginxcluster
+        spec:
+            containers:
+                - name: nginx-c
+                  image: nginx
+                  ports:
+                    - containerPort: 80
+                  volumeMounts:
+                    - mountPath: /usr/share/nginx/html
+                      name: web
+                  volumeMounts:
+                    - mountPath: /logs
+                      name: logs
+            initContainers: # Comandos
+                - name: clonador-web
+                  image: ubuntu
+                  imagePullPolicy: IfNotPresent
+                  command: ['sh','-c','apt update -y && apt install git -y && git clone https://github.com/IvanciniGT/datosNginx /web_clonada']
+                  volumeMounts:
+                    - mountPath: /web_clonada
+                      name: web
+            volumes:
+                - name: web
+                  emptyDir: {}
+                - name: logs
+                  persistentVolumeClaim:
+                    claimName: volumen-logs-nginx
+---
+apiVersion: v1
+kind: Service
+metadata:
+    name: nginx-s
+spec:
+    ports:
+        - port: 8082
+          targetPort: 80
+    selector:
+        app: nginxcluster

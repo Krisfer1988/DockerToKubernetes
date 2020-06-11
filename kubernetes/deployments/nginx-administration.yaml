@@ -1,0 +1,14 @@
+# Administrador
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+    name: mis-volumenes-amazon
+spec:
+    storageClassName: redundante
+    capacity:
+        storage: 100Mi
+    accessModes:
+        - ReadWriteOnce
+    hostPath: # En Pro no tiene mucho sentido: RED o CLOUD
+        path: /redundante
+---

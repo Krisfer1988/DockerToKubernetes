@@ -11,9 +11,8 @@ spec:
           image: jenkins/jenkins:lts
           ports:
             - containerPort: 8080
-#    volumes:
 #  volumes:
-#                - /home/ubuntu/environment/curso/docker/jenkins/data:/var/jenkins_home
+#   - /home/ubuntu/environment/curso/docker/jenkins/data:/var/jenkins_home
 ---
 apiVersion: v1
 kind: Service
