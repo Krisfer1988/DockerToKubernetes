@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mipvc-minfs
+spec:
+  storageClassName: minfs
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 5Mi
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pruebanfs
+spec:
+  volumes:
+  - name: volumen-nfs
+    persistentVolumeClaim:
+      claimName: mipvc-minfs
+  containers:
+  - image: ubuntu
+    name: ubuntu
+    command: ["/bin/sh"]
+    args: ["-c", "sleep 600"]
+    volumeMounts:
+    - name: volumen-nfs
+      mountPath: /carpeta-del-nfs
