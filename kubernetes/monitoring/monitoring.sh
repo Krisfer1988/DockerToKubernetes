@@ -1,9 +1,8 @@
-cd ..
-kubectl apply -f kube-state/
+cd ~/environment/curso/kubernetes/monitoring/
+kubectl apply -f kubestate/
 kubectl get deployments kube-state-metrics -n kube-system
 
-
-cd ~/environment/curso/kubernetes/monitoring/
+kubectl create namespace monitoring
 kubectl apply -f clusterRole.yaml 
 kubectl apply -f configMap.yaml 
 kubectl apply -f prometheus.yaml 

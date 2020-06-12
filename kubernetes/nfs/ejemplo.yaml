@@ -27,3 +27,34 @@ spec:
     volumeMounts:
     - name: volumen-nfs
       mountPath: /carpeta-del-nfs
+  affinity:
+    nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution: 
+            nodeSelectorTerms:
+                - matchExpressions:
+                    - key: cliente-nfs
+                      operator: In
+                      values:
+                        - 'true'      
+
+# Servidor NFS: 
+  # Fuera del kubernetes
+  
+# Nodos del cluster donde quiera tener pods con volumenes NFS necesito:
+  # - Cliente NFS
+  # - Poner label
+
+# Los pods que vaya a desplegar con NFS tienen que tener afinidad a los nodos con cliente NFS
+
+# Provisionador (POD) también tiene que tener afinidad a los nodos con cliente NFS
+
+# Nodo1 - SI TIENE CLIENTE NFS
+  # Provisionador (por afinidad ha caido aqui)
+    # 1 Montar carpeta nfs
+    # 2 Generar un directorio XXXXX
+    # 3 Generar un PV asociado al directorio XXXXX
+# Nodo2 - SI TIENE CLIENTE NFS
+  # Aplicacion que requiere de nfs (por afinidad ha caido aqui)
+    # Solicitar un pv vía un pvc -> Kubernetes SClass
+    # Montar carpeta nfs/XXXXX
+# Nodo3 - NO TIENE CLIENTE NFS

@@ -27,9 +27,18 @@ spec:
             - name: NFS_SERVER
               value: 172.31.31.168
             - name: NFS_PATH
-              value: /mnt/kuberetes
+              value: /mnt/kuberetes # Pod
       volumes:
         - name: nfs-client-root
           nfs:
             server: 172.31.31.168
-            path: /mnt/kuberetes
+            path: /mnt/kuberetes # Servidor
+      affinity:
+        nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution: 
+                nodeSelectorTerms:
+                    - matchExpressions:
+                        - key: cliente-nfs
+                          operator: In
+                          values:
+                            - 'true'
